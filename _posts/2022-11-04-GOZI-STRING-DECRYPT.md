@@ -3,17 +3,11 @@ layout: post
 title: Gozi String Decryption
 ---
 
+
 Sample Hash: 0a66e8376fc6d9283e500c6e774dc0a109656fd457a0ce7dbf40419bc8d50936
 Sample link: https://bazaar.abuse.ch/sample/0a66e8376fc6d9283e500c6e774dc0a109656fd457a0ce7dbf40419bc8d50936/
 
-![image](https://user-images.githubusercontent.com/107503502/199960228-90a98d26-8e55-410e-b4ea-98c6140417f9.png)
-
-
-
-
-OSINT:
-
-//TODO
+![image](https://user-images.githubusercontent.com/107503502/199960818-6e4396c6-e6a0-494c-a37d-bc1f9f6b83c0.png)
 
 
 Potentially Packed Sample:
@@ -26,15 +20,13 @@ Pestudio Data:
 	• Probable anti debugging by looking at functions.
 	• No useful strings are found
 
+![image](https://user-images.githubusercontent.com/107503502/199960883-23682ade-6826-404c-853b-ca9913cdb88e.png)
 
+![image](https://user-images.githubusercontent.com/107503502/199960892-d2897ebf-3d23-4380-b4e0-686f6bcfac6d.png)
 
+![image](https://user-images.githubusercontent.com/107503502/199960918-d8c5573d-1c89-4518-a8d4-9f504dc853ab.png)
 
-
-
-
-
-
-
+![image](https://user-images.githubusercontent.com/107503502/199960925-d7748659-54a1-4d88-a519-1b877563f8b8.png)
 
 IDA  also has trouble loading the sample. So I will try to unpack the file with x32 dbg.
 Considering OSINT sources and sandbox analysis we may have packed code, and also some shellcode involved which might be what's decrypting the unpacked code.
@@ -53,22 +45,21 @@ We will try to catch the VirtualAlloc to follow eax. This will be the region of 
 
 First Virtual Alloc
 
+![image](https://user-images.githubusercontent.com/107503502/199960958-9f3c4b7b-b371-49be-a29a-f3a15c29ac3a.png)
 
-
-
-
+![image](https://user-images.githubusercontent.com/107503502/199960975-09fe3d63-5a63-49b4-b78c-93b96cddc9c5.png)
 
 Second VirtualAlloc seems more promising, we get an mz header, and assume at this point that this is the unpacked code:
 
-
+![image](https://user-images.githubusercontent.com/107503502/199961022-2c8146f9-9fe9-4e59-8b53-48f6f0f9e1a1.png)
 
 We get more errors and the file does not seem to be able to be opened by pestudio and pe-bear.
 So third virtual alloc:
-
+![image](https://user-images.githubusercontent.com/107503502/199961062-63dd78cb-d1a6-4eec-b8c5-ecb1d49e92bb.png)
 
 This seems to be better, but the file is mapped in memory. So we need to rebase it:
 
-
+![image](https://user-images.githubusercontent.com/107503502/199961087-319bc195-f90d-4b9f-bddb-0eec9d8767d5.png)
 
 Rebasing:
 
@@ -80,13 +71,12 @@ Rdata - .text
 Etc
 
 Before:
-
-
+![image](https://user-images.githubusercontent.com/107503502/199961120-74f109e8-c698-45a5-a8ea-d7220d5e9353.png)
 
 After:
+![image](https://user-images.githubusercontent.com/107503502/199961149-27097361-9992-44a6-bc3f-0674656efb73.png)
 
-
-
+![image](https://user-images.githubusercontent.com/107503502/199961159-cbe48d70-8e60-4714-b937-2b84bde6818d.png)
 
 So now imports are resolved, we can save and load into pestudio again.
 
@@ -95,7 +85,7 @@ Everything seems to load fine.
 Another to get the unpacked file, is to run until VirtualProtect follow the first stack argument which is the original exectuable. The malware will substitute itself with the unpacked code.
 Once this is done, we can dump out the sample.
 
-
+![image](https://user-images.githubusercontent.com/107503502/199961193-3530300d-21c5-45f1-8f9e-97cfe249333f.png)
 
 
 
@@ -121,15 +111,10 @@ Documentation:
 
 A handle to the DLL module. The value is the base address of the DLL. The HINSTANCE of a DLL is the same as the HMODULE of the DLL, 
 so hinstDLL can be used in calls to functions that require a module handle.
-
-
-
-
-
-
-
-
-
+![image](https://user-images.githubusercontent.com/107503502/199961264-c82cea41-55e3-4507-a989-88500bbdcb6c.png)
+![image](https://user-images.githubusercontent.com/107503502/199961271-e7f296aa-814c-4613-ac26-a672ca1466ae.png)
+![image](https://user-images.githubusercontent.com/107503502/199961280-ff23ca74-03fb-420d-8683-4b7f8882e1f3.png)
+![image](https://user-images.githubusercontent.com/107503502/199961286-df4751ff-0a69-4455-90f4-c859c88af037.png)
 
 So to figura out what else is going on in the code, we expect that the headers are parsed, we will use the header structs to see what the constants are referencing.
 We’ll need to import IMAGE_DOS_HEADER, IMAGE_NT_HEADERS, and IMAGE_SECTION_HEADER.
@@ -140,54 +125,49 @@ Example:
 
 In the above code, we reached the section table already, so exc has the base for the Section Table.
 
-
-
-
+![image](https://user-images.githubusercontent.com/107503502/199961319-061037f0-f51b-49e3-ac93-bde92e475a0d.png)
+![image](https://user-images.githubusercontent.com/107503502/199961335-5c68e4a3-75d6-4d83-a889-d7639ac26375.png)
 
 The next offset is 0x10 which from the image above, we see is SizeOfRawData
 
-
-
+![image](https://user-images.githubusercontent.com/107503502/199961364-5bcce091-50cf-4fe1-a391-2bc70d3f3674.png)
 
 So the whole block cleaned up will be:
 
-
-			
-
+![image](https://user-images.githubusercontent.com/107503502/199961387-2151477e-2d19-4181-946d-31a1863c5c01.png)
+![image](https://user-images.githubusercontent.com/107503502/199961396-5890755e-6738-46b2-a365-5cd46a2f222b.png)
 
 The function gets the VirtualAddress and SizeOfRawData of the .bss section, where are encrypted variables are located.
 
 Checking out the code for this section and cleaning it up a bit, we see a potential decryption function. It seems to be using the campagn id (date) to generate a key, but also we need to figure out what a1 is.
 So jumping back we find out where it is filled out.
 
-
-
-
-
-
-
-
-
+![image](https://user-images.githubusercontent.com/107503502/199961418-037f229c-e29d-45d3-a975-5d2ebf38e4ef.png)
+![image](https://user-images.githubusercontent.com/107503502/199961426-90a96e37-5112-4858-a196-6b3c17f688fa.png)
+![image](https://user-images.githubusercontent.com/107503502/199961434-0cc9c4f4-5722-4c24-926d-1087a7dc63b0.png)
+![image](https://user-images.githubusercontent.com/107503502/199961444-fdd1d776-adac-4bb0-98d8-8f1ef035eabb.png)
 
 Key generation:
 
 So the key is generated with the following:  key = VirtualAddressBSS + DWORD1 + DWORD 2 + [0-18] where the dword are the campaign id strings concatenated. 
 The number 0-18 dervies from the system_time_0_18  var seen above - 1. We will have to test this out to figure out which is the correct number.
 
-
+![image](https://user-images.githubusercontent.com/107503502/199961474-81a3629f-e9c7-45f5-81c6-b87d4df14803.png)
 
 The decryption:
 
 The following code need to convert DWORD to int and then back. The results should be always a 32 bit word.
 To do this the result will be (n & 0xffffffff)  to yield a 32-bit number.
 
-
+![image](https://user-images.githubusercontent.com/107503502/199961499-6d003cb5-dae2-4cbb-88fb-7128b6e261d7.png)
 
 Retrieving .bss section:
 
+![image](https://user-images.githubusercontent.com/107503502/199961540-6ff209ec-754b-42fb-a415-26b3fb268e2b.png)
 
 
 Now let's put everything together throwing in a regex for matching campaign dates:
+
 
 
 import binascii, sys, pefile, re, struct
@@ -243,6 +223,29 @@ if __name__ == '__main__':
 
 Once we launch the script with our .bin we get the same .bin but with the .bss section modifed.
 
+![image](https://user-images.githubusercontent.com/107503502/199961640-76b3f399-118f-448e-951b-8f29c9d3a222.png)
 
 
-![image](https://user-images.githubusercontent.com/107503502/199960169-217ba5ee-02e1-4a6c-b209-fccffc0d2614.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
