@@ -1,3 +1,8 @@
+---
+layout: post
+title: EMOTET XLS MACRO
+---
+
 ##Sample: SHA256 2b9e253192c68bc69638043a5901d7753a9985a431738f0b22c7efea3e24bdea##
 ##Sample Link: https://bazaar.abuse.ch/download/2b9e253192c68bc69638043a5901d7753a9985a431738f0b22c7efea3e24bdea/ ##
 
