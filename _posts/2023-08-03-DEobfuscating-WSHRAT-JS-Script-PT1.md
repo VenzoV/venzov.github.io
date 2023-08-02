@@ -1,6 +1,6 @@
 ---
 layout: post
-title: DEobfuscating-WSHRAT-JS-Script-PT1
+title: DEobfuscating WSHRAT
 ---
 
 ## Sample Information
