@@ -2,6 +2,7 @@
 layout: post
 title: DEobfuscating WSHRAT
 ---
+{::options parse_block_html="true" /}
 
 ## Sample Information
 
