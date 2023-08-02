@@ -14,12 +14,15 @@ title: DEobfuscating WSHRAT
 The script starts by defining the **".proc()"** function and adding it as a method to the String[] type.
 The function, once called will convert content to string and then perform eval().
 This is used within the code to launch code saved as string.
+
 ![Pasted image 20230731230644](https://github.com/VenzoV/venzov.github.io/assets/107503502/2b03fab8-d709-498e-a51b-a99b3b8fb92a)
 
 The second function defined in the same way is **".nan()"**. This code simply inverts the contents of an array of length 3.
+
 ![Pasted image 20230731230657](https://github.com/VenzoV/venzov.github.io/assets/107503502/7dfb461e-4e36-4b02-9e0d-5ceb653b3426)
 
 Third function defines the the function **"turn()"** this is simply used to reverse a string. Nothing to special.
+
 ![Pasted image 20230731230715](https://github.com/VenzoV/venzov.github.io/assets/107503502/fbb15290-5192-4dfc-afef-944611701602)
 
 The first array in which the **"turn()"** function is used is **"sH1n3k0N"**. The output can be obtained easily by just looking at the code, but for sanity sake we will use node to help with a neat output.
