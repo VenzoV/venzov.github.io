@@ -28,6 +28,10 @@ Third function defines the the function **"turn()"** this is simply used to reve
 
 The first array in which the **"turn()"** function is used is **"sH1n3k0N"**. The output can be obtained easily by just looking at the code, but for sanity sake we will use node to help with a neat output.
 
+
+![image](https://github.com/VenzoV/venzov.github.io/assets/107503502/e1ee3760-2cea-4b8a-ae91-99aead691017)
+
+
 ``` 
 Code:
 var sH1n3k0N = [null,
