@@ -1,3 +1,8 @@
+---
+layout: post
+title: DEobfuscating-WSHRAT-JS-Script-PT1
+---
+
 ## Sample Information
 
 | SHA25 | SHA1 | MD5|
